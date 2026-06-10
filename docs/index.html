@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TradeAI Matchmaker — Global Supply/Demand Reports</title>
+<style>
+:root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --muted:#94a3b8;
+        --accent:#38bdf8; --new:#f472b6; --grow:#34d399; --est:#64748b; }
+* { box-sizing:border-box; margin:0; }
+body { background:var(--bg); color:var(--text);
+       font:15px/1.6 -apple-system,'Segoe UI',Roboto,sans-serif; padding:2rem 1rem; }
+.wrap { max-width:1000px; margin:0 auto; }
+h1 { font-size:1.7rem; margin-bottom:.3rem; }
+h2 { font-size:1.2rem; margin:0 0 .2rem; }
+.sub { color:var(--muted); margin-bottom:1.5rem; }
+.card { background:var(--card); border-radius:12px; padding:1.3rem 1.5rem;
+        margin-bottom:1.6rem; overflow-x:auto; }
+table { border-collapse:collapse; width:100%; margin-top:.8rem; font-size:.92rem; }
+th { text-align:left; color:var(--muted); font-weight:600; padding:.4rem .6rem;
+     border-bottom:1px solid #334155; white-space:nowrap; }
+td { padding:.45rem .6rem; border-bottom:1px solid #273349; white-space:nowrap; }
+td.num, th.num { text-align:right; }
+.bar { background:#0c4a6e; border-radius:3px; height:10px; display:inline-block;
+       vertical-align:middle; margin-right:.5rem; }
+.tag { font-size:.75rem; font-weight:700; padding:.1rem .5rem; border-radius:99px; }
+.tag.NEW { background:var(--new); color:#500724; }
+.tag.GROW { background:var(--grow); color:#064e3b; }
+.tag.ESTABLISHED { background:var(--est); color:#f1f5f9; }
+.insights { background:#172554; border-left:4px solid var(--accent);
+            border-radius:8px; padding:.9rem 1.1rem; margin-top:1rem; }
+.insights li { margin-left:1.1rem; margin-bottom:.3rem; }
+.pos { color:var(--grow); } .neg { color:#f87171; }
+footer { color:var(--muted); font-size:.85rem; margin-top:2rem; }
+a { color:var(--accent); }
+</style></head>
+<body><div class="wrap">
+<h1>🌏 TradeAI Matchmaker</h1>
+<div class="sub">Global supply &amp; demand matching — kết nối nhà xuất khẩu và nhập khẩu
+qua dữ liệu hải quan chính thức (UN Comtrade). Generated 2026-06-10 14:18 (ICT).</div>
+
+<div class="card" id="vn-coffee">
+  <h2>Vietnamese coffee exporter — where to sell? (HS 0901)</h2>
+  <div class="sub">Cà phê Việt Nam: thị trường xuất khẩu tiềm năng · 2023, trend window 2019–2023</div>
+  <table>
+    <tr><th>#</th><th>Country</th><th class="num">Import market (2023)</th>
+        <th class="num">Your exports</th><th class="num">Penetration</th>
+        <th class="num">CAGR 4y</th><th>Status</th></tr>
+    <tr><td>1</td><td>USA (USA)</td><td class='num'><span class='bar' style='width:120px'></span>$8.20B</td><td class='num'>$266.3M</td><td class='num'>3.2%</td><td class='num'><span class='pos'>+8.9%</span></td><td><span class='tag GROW'>GROW</span></td></tr><tr><td>2</td><td>Germany (DEU)</td><td class='num'><span class='bar' style='width:61px'></span>$4.19B</td><td class='num'>$442.2M</td><td class='num'>10.6%</td><td class='num'><span class='pos'>+7.9%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>3</td><td>France (FRA)</td><td class='num'><span class='bar' style='width:48px'></span>$3.34B</td><td class='num'>$47.2M</td><td class='num'>1.4%</td><td class='num'><span class='pos'>+5.1%</span></td><td><span class='tag GROW'>GROW</span></td></tr><tr><td>4</td><td>Italy (ITA)</td><td class='num'><span class='bar' style='width:36px'></span>$2.48B</td><td class='num'>$320.8M</td><td class='num'>12.9%</td><td class='num'><span class='pos'>+11.2%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>5</td><td>Canada (CAN)</td><td class='num'><span class='bar' style='width:25px'></span>$1.74B</td><td class='num'>$18.8M</td><td class='num'>1.1%</td><td class='num'><span class='pos'>+9.8%</span></td><td><span class='tag GROW'>GROW</span></td></tr><tr><td>6</td><td>Japan (JPN)</td><td class='num'><span class='bar' style='width:22px'></span>$1.56B</td><td class='num'>$255.7M</td><td class='num'>16.4%</td><td class='num'><span class='pos'>+5.7%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>7</td><td>Netherlands (NLD)</td><td class='num'><span class='bar' style='width:21px'></span>$1.46B</td><td class='num'>$109.2M</td><td class='num'>7.5%</td><td class='num'><span class='pos'>+6.1%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>8</td><td>Spain (ESP)</td><td class='num'><span class='bar' style='width:20px'></span>$1.39B</td><td class='num'>$222.0M</td><td class='num'>15.9%</td><td class='num'><span class='pos'>+9.9%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>9</td><td>United Kingdom (GBR)</td><td class='num'><span class='bar' style='width:19px'></span>$1.33B</td><td class='num'>$93.0M</td><td class='num'>7.0%</td><td class='num'><span class='pos'>+5.8%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>10</td><td>Switzerland (CHE)</td><td class='num'><span class='bar' style='width:18px'></span>$1.24B</td><td class='num'>$594K</td><td class='num'>0.1%</td><td class='num'><span class='pos'>+13.5%</span></td><td><span class='tag GROW'>GROW</span></td></tr><tr><td>11</td><td>Rep. of Korea (KOR)</td><td class='num'><span class='bar' style='width:16px'></span>$1.11B</td><td class='num'>$93.5M</td><td class='num'>8.4%</td><td class='num'><span class='pos'>+13.8%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>12</td><td>Poland (POL)</td><td class='num'><span class='bar' style='width:14px'></span>$1.00B</td><td class='num'>$26.2M</td><td class='num'>2.6%</td><td class='num'><span class='pos'>+14.8%</span></td><td><span class='tag GROW'>GROW</span></td></tr>
+  </table>
+  <div class="insights"><b>💡 Phân tích nhanh / Key insights</b><ul><li><b>USA (USA)</b> — thị trường $8.20B, tăng trưởng +8.9%/năm; mức thâm nhập hiện tại 3.2% (GROW) → dư địa lớn nhất.</li><li><b>Germany (DEU)</b> — $4.19B, tăng trưởng +7.9%/năm; thâm nhập 10.6% (ESTABLISHED).</li><li><b>France (FRA)</b> — $3.34B, tăng trưởng +5.1%/năm; thâm nhập 1.4% (GROW).</li></ul></div>
+</div>
+<div class="card" id="us-furniture">
+  <h2>US furniture importer — where to source? (HS 9403)</h2>
+  <div class="sub">Nhà nhập khẩu nội thất Mỹ: nguồn cung tốt nhất · 2023, trend window 2019–2023</div>
+  <table>
+    <tr><th>#</th><th>Country</th><th class="num">Export supply (2023)</th>
+        <th class="num">Your imports</th><th class="num">Penetration</th>
+        <th class="num">CAGR 4y</th><th>Status</th></tr>
+    <tr><td>1</td><td>China (CHN)</td><td class='num'><span class='bar' style='width:120px'></span>$34.40B</td><td class='num'>$6.40B</td><td class='num'>18.6%</td><td class='num'><span class='pos'>+5.5%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>2</td><td>Germany (DEU)</td><td class='num'><span class='bar' style='width:32px'></span>$9.18B</td><td class='num'>$322.0M</td><td class='num'>3.5%</td><td class='num'><span class='pos'>+3.6%</span></td><td><span class='tag GROW'>GROW</span></td></tr><tr><td>3</td><td>Italy (ITA)</td><td class='num'><span class='bar' style='width:28px'></span>$8.24B</td><td class='num'>$1.25B</td><td class='num'>15.1%</td><td class='num'><span class='pos'>+2.3%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>4</td><td>Poland (POL)</td><td class='num'><span class='bar' style='width:24px'></span>$7.00B</td><td class='num'>$402.3M</td><td class='num'>5.8%</td><td class='num'><span class='pos'>+6.3%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>5</td><td>Viet Nam (VNM)</td><td class='num'><span class='bar' style='width:22px'></span>$6.40B</td><td class='num'>$6.82B</td><td class='num'>106.5%</td><td class='num'><span class='pos'>+3.8%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>6</td><td>Canada (CAN)</td><td class='num'><span class='bar' style='width:11px'></span>$3.19B</td><td class='num'>$3.04B</td><td class='num'>95.2%</td><td class='num'><span class='pos'>+2.9%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>7</td><td>Türkiye (TUR)</td><td class='num'><span class='bar' style='width:8px'></span>$2.38B</td><td class='num'>$131.6M</td><td class='num'>5.5%</td><td class='num'><span class='pos'>+7.8%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>8</td><td>Mexico (MEX)</td><td class='num'><span class='bar' style='width:7px'></span>$2.15B</td><td class='num'>$2.47B</td><td class='num'>114.5%</td><td class='num'><span class='pos'>+11.1%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>9</td><td>Malaysia (MYS)</td><td class='num'><span class='bar' style='width:7px'></span>$2.15B</td><td class='num'>$1.17B</td><td class='num'>54.5%</td><td class='num'><span class='pos'>+0.1%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>10</td><td>Lithuania (LTU)</td><td class='num'><span class='bar' style='width:6px'></span>$1.96B</td><td class='num'>$241.6M</td><td class='num'>12.3%</td><td class='num'><span class='pos'>+7.2%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>11</td><td>Spain (ESP)</td><td class='num'><span class='bar' style='width:6px'></span>$1.91B</td><td class='num'>$137.4M</td><td class='num'>7.2%</td><td class='num'><span class='pos'>+5.7%</span></td><td><span class='tag ESTABLISHED'>ESTABLISHED</span></td></tr><tr><td>12</td><td>Netherlands (NLD)</td><td class='num'><span class='bar' style='width:6px'></span>$1.75B</td><td class='num'>$41.4M</td><td class='num'>2.4%</td><td class='num'><span class='pos'>+5.6%</span></td><td><span class='tag GROW'>GROW</span></td></tr>
+  </table>
+  <div class="insights"><b>💡 Phân tích nhanh / Key insights</b><ul><li><b>China (CHN)</b> — nguồn cung $34.40B, tăng trưởng +5.5%/năm; mức thâm nhập hiện tại 18.6% (ESTABLISHED) → dư địa lớn nhất.</li><li><b>Germany (DEU)</b> — $9.18B, tăng trưởng +3.6%/năm; thâm nhập 3.5% (GROW).</li><li><b>Italy (ITA)</b> — $8.24B, tăng trưởng +2.3%/năm; thâm nhập 15.1% (ESTABLISHED).</li></ul></div>
+</div>
+<footer>
+Data: <a href="https://comtradeapi.un.org">UN Comtrade</a> — official customs
+statistics reported by ~200 governments. CAGR computed over 4 years.
+Status: NEW = no current presence · GROW = &lt;5% penetration · ESTABLISHED = ≥5%.
+Mirror-data caveat: partner-reported values (CIF) can exceed reporter values (FOB),
+so penetration can exceed 100% in suppliers mode.<br>
+Built by TradeAI (koi fleet) · Phase 1–2 prototype · analysis is informational,
+not investment or trading advice.
+</footer>
+</div></body></html>

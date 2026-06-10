@@ -1,0 +1,40 @@
+TRADEAI MATCHMAKER — SAMPLE REPORTS (data: UN Comtrade, official customs statistics)
+Generated: 2026-06-10
+
+=== DEMO 1: Vietnamese coffee exporter (HS 0901) looking for buyers ===
+
+Top import markets for HS 0901 — 2023, viewpoint: Viet Nam (VNM) (buyers)
+
+ #  Country                           Market size   Your trade   Share  Status
+ 1  USA (USA)                              $8.20B      $266.3M    3.2%  GROW
+ 2  Germany (DEU)                          $4.19B      $442.2M   10.6%  ESTABLISHED
+ 3  France (FRA)                           $3.34B       $47.2M    1.4%  GROW
+ 4  Italy (ITA)                            $2.48B      $320.8M   12.9%  ESTABLISHED
+ 5  Canada (CAN)                           $1.74B       $18.8M    1.1%  GROW
+ 6  Japan (JPN)                            $1.56B      $255.7M   16.4%  ESTABLISHED
+ 7  Netherlands (NLD)                      $1.46B      $109.2M    7.5%  ESTABLISHED
+ 8  Spain (ESP)                            $1.39B      $222.0M   15.9%  ESTABLISHED
+ 9  United Kingdom (GBR)                   $1.33B       $93.0M    7.0%  ESTABLISHED
+10  Switzerland (CHE)                      $1.24B        $594K    0.1%  GROW
+11  Rep. of Korea (KOR)                    $1.11B       $93.5M    8.4%  ESTABLISHED
+12  Poland (POL)                           $1.00B       $26.2M    2.6%  GROW
+
+Source: UN Comtrade (official customs statistics), public API.
+
+=== DEMO 2: US furniture importer (HS 9403) looking for suppliers ===
+
+Top source countries for HS 9403 — 2023, viewpoint: USA (USA) (suppliers)
+
+ #  Country                           Market size   Your trade   Share  Status
+ 1  China (CHN)                           $34.40B       $6.40B   18.6%  ESTABLISHED
+ 2  Germany (DEU)                          $9.18B      $322.0M    3.5%  GROW
+ 3  Italy (ITA)                            $8.24B       $1.25B   15.1%  ESTABLISHED
+ 4  Poland (POL)                           $7.00B      $402.3M    5.8%  ESTABLISHED
+ 5  Viet Nam (VNM)                         $6.40B       $6.82B  106.5%  ESTABLISHED
+ 6  Canada (CAN)                           $3.19B       $3.04B   95.2%  ESTABLISHED
+ 7  Türkiye (TUR)                          $2.38B      $131.6M    5.5%  ESTABLISHED
+ 8  Mexico (MEX)                           $2.15B       $2.47B  114.5%  ESTABLISHED
+ 9  Malaysia (MYS)                         $2.15B       $1.17B   54.5%  ESTABLISHED
+10  Lithuania (LTU)                        $1.96B      $241.6M   12.3%  ESTABLISHED
+
+Source: UN Comtrade (official customs statistics), public API.
