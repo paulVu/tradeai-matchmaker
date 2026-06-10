@@ -3,7 +3,10 @@
 AI tool that matches supply and demand across industries and product
 categories globally, connecting buyers/importers with sellers/exporters.
 
-## Status: Phase 1 prototype (working)
+**Live reports:** https://paulvu.github.io/tradeai-matchmaker/
+(rebuild with `python3 build_report.py`, then commit & push `docs/`)
+
+## Status: Phase 1–2 prototype (working)
 
 `matchmaker.py` answers two core questions from official customs data:
 
@@ -41,12 +44,11 @@ Phase 1 (done)    Market matching engine
                   HS code + country + direction → ranked markets/sources
                   with penetration analysis (UN Comtrade)
 
-Phase 2           Insight layer
-                  - Trends: 5-year CAGR per market, unit-price benchmarks
-                  - Tariff overlay (WTO/WITS): effective duty per market pair
-                  - HS-code finder: free-text product → HS candidates
-                  - Claude-generated market briefs: combine the numbers into
-                    a written analysis per query
+Phase 2 (partial) Insight layer
+                  - DONE: multi-year trend + CAGR per market (--trend N)
+                  - DONE: HS-code finder, free text → codes (--hs-search)
+                  - DONE: auto-generated insights on the report page
+                  - TODO: tariff overlay (WTO/WITS), unit-price benchmarks
 
 Phase 3           Counterparty lists
                   - ITC Trade Map company directories per HS+country
