@@ -21,6 +21,7 @@ REPORTS = [
         "title": "Vietnamese coffee exporter — where to sell? (HS 0901)",
         "subtitle": "Cà phê Việt Nam: thị trường xuất khẩu tiềm năng",
         "hs": "0901", "mode": "buyers", "country": "VNM",
+        "tariff_hs6": "090111",  # representative line: green coffee, not decaf
     },
     {
         "id": "us-furniture",
@@ -28,7 +29,60 @@ REPORTS = [
         "subtitle": "Nhà nhập khẩu nội thất Mỹ: nguồn cung tốt nhất",
         "hs": "9403", "mode": "suppliers", "country": "USA",
     },
+    {
+        "id": "vn-grapes",
+        "title": "Vietnamese fresh-grape importer — where to source? (HS 080610)",
+        "subtitle": "Nho tươi (gồm Shine Muscat): nguồn cung cho nhà nhập khẩu Việt Nam",
+        "hs": "080610", "mode": "suppliers", "country": "VNM",
+    },
 ]
+
+# Curated, source-linked shortlist — Phase 3 preview. Hand-written from public
+# coverage (FreshPlaza, Produce Report, conference reports); refresh manually.
+SHINE_MUSCAT_HTML = """
+<div class="card" id="shine-muscat">
+  <h2>🍇 Shine Muscat Trung Quốc — nhà vườn &amp; nhà xuất khẩu (sơ bộ)</h2>
+  <div class="sub">Phase 3 preview — tổng hợp từ nguồn công khai, CHƯA thẩm định độc lập.</div>
+
+  <p><b>Vùng trồng chính:</b></p>
+  <ul style="margin:.4rem 0 .9rem 1.2rem">
+    <li><b>Vân Nam (Binchuan/Tân Xuyên)</b> — vùng Shine Muscat lớn nhất, vụ sớm
+        (thu hoạch T4–T10, xuất từ T6). Hội chợ trái cây Binchuan 2024 ký hợp đồng
+        1,29 tỷ NDT với buyer Thái Lan, Việt Nam.</li>
+    <li><b>Hồ Nam</b> — chiến dịch xuất 2025 mở màn sang Malaysia (mục tiêu ~5.000 tấn,
+        10+ thị trường châu Á – châu Phi).</li>
+    <li><b>Tân Cương</b> — vụ muộn, chất lượng cao, xuất sang Nga qua cửa khẩu Horgos.</li>
+  </ul>
+
+  <p><b>Ứng viên từ nguồn công khai (cần thẩm định trước khi giao dịch):</b></p>
+  <table>
+    <tr><th>Đơn vị</th><th>Vùng</th><th>Ghi nhận công khai</th></tr>
+    <tr><td>Binchuan Lvzhiyuan Agricultural Development Co., Ltd.</td><td>Vân Nam (Binchuan)</td>
+        <td>Chuyên trái cây đặc sản Binchuan, đã xuất sang Việt Nam (đưa tin hội chợ Binchuan)</td></tr>
+    <tr><td>Zhengzhou Chen's Sun Fruit &amp; Vegetable Trade Co., Ltd.</td><td>Hà Nam (trader)</td>
+        <td>Thương mại nho Vân Nam: Shine Muscat, Kyoho, Hongti</td></tr>
+    <tr><td>Hai Shun Agri</td><td>Đa vùng</td>
+        <td>Chào hàng Shine Muscat xuất khẩu 2025 (website công ty)</td></tr>
+    <tr><td>Laiwu Manhing Vegetables Fruits Corp.</td><td>Sơn Đông</td>
+        <td>Xuất rau quả 60+ quốc gia từ 2001 (gồm nho)</td></tr>
+  </table>
+
+  <div class="insights"><b>⚠️ Due diligence bắt buộc</b><ul>
+    <li><b>Cảnh báo dư lượng thuốc BVTV:</b> Thai Consumers Council (2024) phát hiện
+        Shine Muscat Trung Quốc tồn dư hóa chất vượt ngưỡng; hàng vào VN thường bán dưới
+        tên "nho sữa/nho mẫu đơn". → Yêu cầu <b>kiểm nghiệm MRL từng lô</b> + COA.</li>
+    <li>Kiểm tra <b>đăng ký GACC</b> của nhà xuất khẩu &amp; mã vùng trồng; yêu cầu
+        phytosanitary certificate, ưu tiên GlobalGAP/HACCP.</li>
+    <li>Giá Shine Muscat tại VN đang ở <b>đáy 4 năm</b> (nguồn cung TQ dư thừa) —
+        lợi thế đàm phán cho buyer nhưng rủi ro chất lượng hàng giá rẻ.</li>
+    <li>Xác minh tốt nhất: gặp trực tiếp tại hội chợ (Binchuan Fruit Conference,
+        Asia Fruit Logistica HK) hoặc qua thương vụ/VCCI.</li>
+  </ul></div>
+
+  <p class="sub" style="margin-top:.8rem">Nguồn: FreshPlaza, Produce Report, Fruitnet,
+  VnExpress, China Daily, EastFruit (2024–2025). Danh sách mang tính gợi ý ban đầu,
+  không phải khuyến nghị thương mại.</p>
+</div>"""
 YEAR = 2023
 TREND = 4
 TOP = 12
@@ -100,11 +154,19 @@ def insights_for(rows, mode):
 def render_report(spec, rows):
     max_market = max(r["market_usd"] for r in rows) or 1
     trs = []
+    has_tariff = bool(spec.get("tariff_hs6"))
     for i, r in enumerate(rows, 1):
         w = max(4, int(r["market_usd"] / max_market * 120))
         cagr = r.get("cagr_pct")
         cagr_html = (f"<span class='{'pos' if cagr >= 0 else 'neg'}'>{cagr:+.1f}%</span>"
                      if cagr is not None else "<span class='sub'>n/a</span>")
+        up = r.get("unit_price_usd_kg")
+        up_html = f"${up:.2f}" if up is not None else "<span class='sub'>n/a</span>"
+        tariff_html = ""
+        if has_tariff:
+            tp = r.get("mfn_tariff_pct")
+            tariff_html = (f"<td class='num'>{tp:.1f}%</td>" if tp is not None
+                           else "<td class='num'><span class='sub'>n/a</span></td>")
         trs.append(
             f"<tr><td>{i}</td><td>{html.escape(r['country'])}</td>"
             f"<td class='num'><span class='bar' style='width:{w}px'></span>"
@@ -112,10 +174,14 @@ def render_report(spec, rows):
             f"<td class='num'>{fmt_usd(r['current_trade_usd'])}</td>"
             f"<td class='num'>{r['penetration_pct']:.1f}%</td>"
             f"<td class='num'>{cagr_html}</td>"
+            f"<td class='num'>{up_html}</td>"
+            f"{tariff_html}"
             f"<td><span class='tag {r['opportunity']}'>{r['opportunity']}</span></td></tr>"
         )
     market_col = "Import market" if spec["mode"] == "buyers" else "Export supply"
     your_col = "Your exports" if spec["mode"] == "buyers" else "Your imports"
+    tariff_th = (f"<th class='num'>MFN tariff (HS {spec['tariff_hs6']})</th>"
+                 if has_tariff else "")
     ins = "".join(f"<li>{t}</li>" for t in insights_for(rows, spec["mode"]))
     return f"""
 <div class="card" id="{spec['id']}">
@@ -124,7 +190,7 @@ def render_report(spec, rows):
   <table>
     <tr><th>#</th><th>Country</th><th class="num">{market_col} ({YEAR})</th>
         <th class="num">{your_col}</th><th class="num">Penetration</th>
-        <th class="num">CAGR {TREND}y</th><th>Status</th></tr>
+        <th class="num">CAGR {TREND}y</th><th class="num">$/kg</th>{tariff_th}<th>Status</th></tr>
     {''.join(trs)}
   </table>
   <div class="insights"><b>💡 Phân tích nhanh / Key insights</b><ul>{ins}</ul></div>
@@ -143,10 +209,14 @@ def main():
         me = mm.iso_to_code(spec["country"], countries)
         print(f"running {spec['id']} …")
         rows = mm.market_analysis(spec["hs"], YEAR, me, spec["mode"],
-                                  top=TOP, trend_years=TREND)
+                                  top=TOP, trend_years=TREND,
+                                  tariff_hs6=spec.get("tariff_hs6"),
+                                  countries=countries)
         for r in rows:
             r["country"] = cname(r["code"])
         sections.append(render_report(spec, rows))
+        if spec["id"] == "vn-grapes":
+            sections.append(SHINE_MUSCAT_HTML)
 
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     page = f"""<!doctype html>

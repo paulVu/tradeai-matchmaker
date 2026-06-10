@@ -26,6 +26,9 @@ BASE = "https://comtradeapi.un.org/public/v1/preview/C/A/HS"
 REF_REPORTERS = "https://comtradeapi.un.org/files/v1/app/reference/Reporters.json"
 REF_PARTNERS = "https://comtradeapi.un.org/files/v1/app/reference/partnerAreas.json"
 REF_HS = "https://comtradeapi.un.org/files/v1/app/reference/H6.json"
+WITS_TRN = ("https://wits.worldbank.org/API/V1/SDMX/V21/datasource/TRN"
+            "/reporter/{rep}/partner/000/product/{hs6}/year/{year}/datatype/reported")
+WITS_COUNTRIES = "https://wits.worldbank.org/API/V1/wits/datasource/trn/country/ALL"
 CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
 
 
@@ -74,7 +77,7 @@ def comtrade(params: dict):
 
 
 def world_trade_by_country(hs: str, year: int, flow: str):
-    """Total imports (M) or exports (X) of `hs` per country, world as partner."""
+    """Per-country totals of `hs` trade with world: {code: {"v": usd, "kg": net_weight}}."""
     rows = comtrade({
         "reporterCode": "", "period": year, "cmdCode": hs,
         "flowCode": flow, "partnerCode": 0, "maxRecords": 500,
@@ -83,7 +86,9 @@ def world_trade_by_country(hs: str, year: int, flow: str):
     totals = {}
     for r in rows:
         code = str(r["reporterCode"])
-        totals[code] = totals.get(code, 0) + (r.get("primaryValue") or 0)
+        t = totals.setdefault(code, {"v": 0, "kg": 0})
+        t["v"] += r.get("primaryValue") or 0
+        t["kg"] += r.get("netWgt") or 0
     return totals
 
 
@@ -119,12 +124,73 @@ def hs_search(keyword: str, limit: int = 15):
     return hits[:limit]
 
 
+def wits_country_map():
+    """ISO3 -> WITS/ISO numeric reporter code (real countries only)."""
+    path = os.path.join(CACHE_DIR, "wits_countries.json")
+    if os.path.exists(path) and time.time() - os.path.getmtime(path) < 30 * 86400:
+        with open(path) as f:
+            return json.load(f)
+    import re
+    req = urllib.request.Request(WITS_COUNTRIES, headers={"User-Agent": "TradeAI-matchmaker/0.1"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        xml = r.read().decode()
+    out = {}
+    for m in re.finditer(
+            r'<wits:country countrycode="(\d+)"[^>]*isgroup="No"[^>]*>.*?'
+            r'<wits:iso3Code>([A-Z]{3})</wits:iso3Code>', xml, re.S):
+        out[m.group(2)] = m.group(1)
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(out, f)
+    return out
+
+
+EU_MEMBERS = {
+    "AUT", "BEL", "BGR", "HRV", "CYP", "CZE", "DNK", "EST", "FIN", "FRA",
+    "DEU", "GRC", "HUN", "IRL", "ITA", "LVA", "LTU", "LUX", "MLT", "NLD",
+    "POL", "PRT", "ROU", "SVK", "SVN", "ESP", "SWE",
+}
+
+
+def mfn_tariff(iso3: str, hs6: str, year: int):
+    """Market's MFN simple-average tariff (%) on an HS6 line, from WITS/TRAINS.
+
+    Tries `year` then two prior years (tariff reporting lags trade data).
+    EU members share the common external tariff, reported under "EUN".
+    Returns {"rate": float, "year": int} or None.
+    """
+    import re
+    iso3 = iso3.upper()
+    if iso3 in EU_MEMBERS:
+        iso3 = "EUN"
+    rep = wits_country_map().get(iso3)
+    if not rep:
+        return None
+    for y in (year, year - 1, year - 2):
+        url = WITS_TRN.format(rep=rep, hs6=hs6, year=y)
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "TradeAI-matchmaker/0.1"})
+            with urllib.request.urlopen(req, timeout=60) as r:
+                xml = r.read().decode()
+        except Exception:
+            continue
+        time.sleep(0.6)
+        for obs in re.findall(r"<Obs ([^>]+)/>", xml):
+            attrs = dict(re.findall(r'(\w+)="([^"]*)"', obs))
+            if attrs.get("TARIFFTYPE") == "MFN" and "OBS_VALUE" in attrs:
+                return {"rate": float(attrs["OBS_VALUE"]), "year": y}
+    return None
+
+
 def market_analysis(hs: str, year: int, me: str, mode: str,
-                    top: int = 15, trend_years: int = 0):
-    """Core engine: ranked markets/sources, optionally with multi-year trend.
+                    top: int = 15, trend_years: int = 0,
+                    tariff_hs6: str = None, countries: dict = None):
+    """Core engine: ranked markets/sources, optionally with multi-year trend,
+    unit prices ($/kg) and MFN tariff overlay.
 
     Returns list of dicts; when trend_years > 0 each row gains
-    `history` {year: usd} and `cagr_pct` over the window.
+    `history` {year: usd} and `cagr_pct`; when tariff_hs6 is set (buyers mode)
+    each row gains `mfn_tariff_pct` / `tariff_year` for that HS6 line.
     """
     market_flow = "M" if mode == "buyers" else "X"
     my_flow = "X" if mode == "buyers" else "M"
@@ -132,7 +198,7 @@ def market_analysis(hs: str, year: int, me: str, mode: str,
     world = world_trade_by_country(hs, year, market_flow)
     mine = country_partners(hs, year, me, my_flow)
     world.pop(me, None)
-    ranked = sorted(world.items(), key=lambda kv: -kv[1])[:top]
+    ranked = sorted(world.items(), key=lambda kv: -kv[1]["v"])[:top]
 
     history = {}
     if trend_years > 0:
@@ -140,23 +206,30 @@ def market_analysis(hs: str, year: int, me: str, mode: str,
             history[y] = world_trade_by_country(hs, y, market_flow)
 
     results = []
-    for cid, value in ranked:
+    for cid, tot in ranked:
+        value, kg = tot["v"], tot["kg"]
         existing = mine.get(cid, 0)
         share = existing / value * 100 if value else 0
         row = {
             "code": cid,
             "market_usd": round(value), "current_trade_usd": round(existing),
             "penetration_pct": round(share, 2),
+            "unit_price_usd_kg": round(value / kg, 2) if kg > 1000 else None,
             "opportunity": "NEW" if existing == 0 else ("GROW" if share < 5 else "ESTABLISHED"),
         }
         if trend_years > 0:
-            row["history"] = {y: round(history[y].get(cid, 0)) for y in history}
+            row["history"] = {y: round(history[y].get(cid, {}).get("v", 0)) for y in history}
             row["history"][year] = round(value)
-            first = history.get(year - trend_years, {}).get(cid, 0)
+            first = history.get(year - trend_years, {}).get(cid, {}).get("v", 0)
             if first > 0 and value > 0:
                 row["cagr_pct"] = round(((value / first) ** (1 / trend_years) - 1) * 100, 1)
             else:
                 row["cagr_pct"] = None
+        if tariff_hs6 and countries:
+            iso3 = countries.get(cid, ("",))[0]
+            t = mfn_tariff(iso3, tariff_hs6, year - 1) if iso3 else None
+            row["mfn_tariff_pct"] = t["rate"] if t else None
+            row["tariff_year"] = t["year"] if t else None
         results.append(row)
     return results
 
@@ -193,6 +266,8 @@ def main():
     ap.add_argument("--top", type=int, default=15)
     ap.add_argument("--trend", type=int, default=0, metavar="N",
                     help="also fetch N prior years and compute CAGR")
+    ap.add_argument("--tariff-hs6", metavar="HS6",
+                    help="overlay each market's MFN tariff on this HS6 line (WITS/TRAINS)")
     ap.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     args = ap.parse_args()
 
@@ -216,7 +291,8 @@ def main():
         return f"{label} ({iso})" if iso else label
 
     results = market_analysis(args.hs, args.year, me, args.mode,
-                              top=args.top, trend_years=args.trend)
+                              top=args.top, trend_years=args.trend,
+                              tariff_hs6=args.tariff_hs6, countries=countries)
     for r in results:
         r["country"] = cname(r["code"])
         r["iso"] = countries.get(r["code"], ("",))[0]
@@ -230,18 +306,26 @@ def main():
 
     market_word = "import markets" if args.mode == "buyers" else "source countries"
     trend_col = f" {'CAGR':>6}" if args.trend else ""
+    price_col = f" {'$/kg':>7}"
+    tariff_col = f" {'MFN':>6}" if args.tariff_hs6 else ""
     print(f"\nTop {market_word} for HS {args.hs} — {args.year}, "
           f"viewpoint: {cname(me)} ({args.mode})\n")
     print(f"{'#':>2}  {'Country':<32} {'Market size':>12} {'Your trade':>12} "
-          f"{'Share':>7}{trend_col}  Status")
+          f"{'Share':>7}{trend_col}{price_col}{tariff_col}  Status")
     for i, r in enumerate(results, 1):
         cagr = ""
         if args.trend:
             cagr = f" {r['cagr_pct']:>5.1f}%" if r.get("cagr_pct") is not None else "    n/a"
+        up = r.get("unit_price_usd_kg")
+        price = f" {up:>7.2f}" if up is not None else f" {'n/a':>7}"
+        tariff = ""
+        if args.tariff_hs6:
+            tp = r.get("mfn_tariff_pct")
+            tariff = f" {tp:>5.1f}%" if tp is not None else f" {'n/a':>6}"
         print(f"{i:>2}  {r['country']:<32} {fmt_usd(r['market_usd']):>12} "
               f"{fmt_usd(r['current_trade_usd']):>12} {r['penetration_pct']:>6.1f}%"
-              f"{cagr}  {r['opportunity']}")
-    print("\nSource: UN Comtrade (official customs statistics), public API.")
+              f"{cagr}{price}{tariff}  {r['opportunity']}")
+    print("\nSource: UN Comtrade (official customs statistics); tariffs: WITS/TRAINS.")
 
 
 if __name__ == "__main__":
